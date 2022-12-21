@@ -1,5 +1,5 @@
 defmodule Jobber.Job do
-  use GenServer
+  use GenServer, restart: :transient
   require Logger
   defstruct [:work, :id, :max_retries, retries: 0, status: "new"]
 
@@ -14,6 +14,10 @@ defmodule Jobber.Job do
 
   defp random_job_id() do
     :crypto.strong_rand_bytes(5) |> Base.url_encode64(padding: false)
+  end
+
+  def start_link(args) do
+    GenServer.start_link(__MODULE__, args)
   end
 
   def handle_continue(:run, state) do
